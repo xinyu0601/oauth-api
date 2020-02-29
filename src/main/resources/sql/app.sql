@@ -1,0 +1,1 @@
+create table app ( id int(10) not null auto_increment, app_name varchar(20), app_secret varchar(40), app_key varchar(40), description varchar(200), callback_url varchar(200), create_time varchar(40), is_open boolean, primary key(id));
