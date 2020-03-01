@@ -4,6 +4,8 @@ import com.xin.oauth.models.entity.AppEntity;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 /**
  * @author xinyu.huang02
@@ -52,4 +54,9 @@ public interface AppMapper {
 
     @Select("SELECT count(*) FROM app")
     int total();
+
+
+    @Select("SELECT app_name, app_secret, app_key, description, callback_url, user_id " +
+            "FROM app WHERE user_id = #{userId}")
+    List<AppEntity> selectByUserId(String userId);
 }

@@ -1,7 +1,6 @@
 package com.xin.oauth.service;
 
 import com.xin.oauth.models.bo.AccessTokenBO;
-import com.xin.oauth.models.bo.AuthRefreshTokenBO;
 import com.xin.oauth.models.bo.TicketBO;
 
 /**
@@ -11,20 +10,20 @@ import com.xin.oauth.models.bo.TicketBO;
  */
 public interface OauthService {
 
-    boolean verifyTicket(String ticketToken);
+    boolean verifyTicket(TicketBO ticketBO);
 
     boolean verifyAccessToken(String accessToken);
 
     AccessTokenBO generateAccessToken(String appKey, String appSecret);
 
-    TicketBO generateTicket();
+    TicketBO generateTicket(String appKey, String appSecret);
 
-    AuthRefreshTokenBO findRefreshToken(String refreshToken);
+    AccessTokenBO findRefreshToken(String refreshToken);
 
     AccessTokenBO findTokenByTokenId(String tokenId);
 
-    void expireTicket(String ticket);
+    void expiresTicket(String ticket);
 
-    void expireToken(String token);
+    void expiresToken(String token);
 
 }

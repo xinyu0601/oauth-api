@@ -2,9 +2,10 @@ package com.xin.oauth.utils.token;
 
 import com.xin.oauth.utils.DateUtils;
 import com.xin.oauth.utils.EncryptUtils;
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 
 /**
  * @author xinyu.huang02
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TicketGenerator {
 
-    private static final Log log = LogFactory.getLog(AccessTokenGenerator.class);
+    private static final Logger log = LoggerFactory.getLogger(AccessTokenGenerator.class);
 
     public String generate(String appId, String scope) {
         String temp = appId + scope + DateUtils.currentTimeInMillis();

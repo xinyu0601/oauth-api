@@ -32,7 +32,18 @@ public class AppEntity {
 
     private String createTime;
 
+    private String userId;
+
     private boolean isOpen;
+
+    public void updateFromBO(AppBO appBO) {
+        this.appName = appBO.getAppName();
+        this.appSecret = appBO.getAppSecret();
+        this.appKey = appBO.getAppKey();
+        this.description = appBO.getDescription();
+        this.callbackUrl = appBO.getDescription();
+        this.isOpen = appBO.isOpen();
+    }
 
     public static AppEntity fromBO(AppBO appBO) {
         return AppEntity.builder()

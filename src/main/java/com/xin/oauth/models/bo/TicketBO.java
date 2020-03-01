@@ -15,4 +15,10 @@ public class TicketBO {
 
     private String ticket;
 
+    private String appKey;
+
+    private String scope;
+
+    private String appSecret;
+
 }

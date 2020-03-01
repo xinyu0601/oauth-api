@@ -1,14 +1,18 @@
 package com.xin.oauth.service.impl;
 
+import com.xin.oauth.constants.Constants;
+import com.xin.oauth.mapper.TokenMapper;
 import com.xin.oauth.models.bo.AccessTokenBO;
-import com.xin.oauth.models.bo.AuthRefreshTokenBO;
 import com.xin.oauth.models.bo.TicketBO;
+import com.xin.oauth.models.entity.TokenEntity;
 import com.xin.oauth.service.OauthService;
-import com.xin.oauth.utils.RedisOperator;
+import com.xin.oauth.utils.RedisUtils;
 import com.xin.oauth.utils.token.AccessTokenGenerator;
+import com.xin.oauth.utils.token.RefreshTokenGenerator;
 import com.xin.oauth.utils.token.TicketGenerator;
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +24,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class OauthServiceImpl implements OauthService {
 
-    private static final Log log = LogFactory.getLog(OauthServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(OauthServiceImpl.class);
 
     @Autowired
-    private RedisOperator redisOperator;
+    private RedisUtils redisUtils;
 
     @Autowired
     private AccessTokenGenerator accessTokenGenerator;
@@ -31,16 +35,24 @@ public class OauthServiceImpl implements OauthService {
     @Autowired
     private TicketGenerator ticketGenerator;
 
+    @Autowired
+    private RefreshTokenGenerator refreshTokenGenerator;
+
+    @Autowired
+    private TokenMapper tokenMapper;
+
     /**
      * 验证ticket token是否有效
      *
-     * @param ticketToken
+     * @param ticketBO
      * @return
      */
     @Override
-    public boolean verifyTicket(String ticketToken) {
-        return false;
+    public boolean verifyTicket(TicketBO ticketBO) {
+        String scopeValue = redisUtils.get(ticketBO.getTicket() + ":scope");
+        return StringUtils.isNotBlank(scopeValue);
     }
+
 
     /**
      * 验证access token 是否有效
@@ -50,8 +62,10 @@ public class OauthServiceImpl implements OauthService {
      */
     @Override
     public boolean verifyAccessToken(String accessToken) {
-        return false;
+        String accessTokenValue = redisUtils.get(accessToken + ":scope");
+        return StringUtils.isNotBlank(accessTokenValue);
     }
+
 
     /**
      * 生成Access token
@@ -60,8 +74,24 @@ public class OauthServiceImpl implements OauthService {
      */
     @Override
     public AccessTokenBO generateAccessToken(String appKey, String appSecret) {
-        return null;
+        String accessToken = accessTokenGenerator.generate(appKey, appSecret);
+        String refreshToken = refreshTokenGenerator.generate(appKey, appSecret);
+        log.info(String.format("Generate accessToken = %s, refrestToken = %s", accessToken, refreshToken));
+        AccessTokenBO accessTokenBO = AccessTokenBO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .appKey(appKey)
+                .appSecret(appSecret)
+                .scope(Constants.DEFAULT_SCOPE).build();
+        TokenEntity newTokenEntity = TokenEntity.fromBO(accessTokenBO);
+        tokenMapper.insert(newTokenEntity);
+        log.info("Insert access token " + newTokenEntity.toString());
+
+        String tokenKey = accessToken + ":" + Constants.DEFAULT_SCOPE;
+        redisUtils.set(tokenKey, accessToken, Constants.TOKEN_EXPIRES_TIME);
+        return accessTokenBO;
     }
+
 
     /**
      * 生成ticket token用于app换取access token
@@ -69,9 +99,19 @@ public class OauthServiceImpl implements OauthService {
      * @return
      */
     @Override
-    public TicketBO generateTicket() {
-        return null;
+    public TicketBO generateTicket(String appKey, String appSecret) {
+        String ticket = ticketGenerator.generate(appKey, appSecret);
+        log.info(String.format("Generate ticket = %s", ticket));
+        TicketBO newTicket = TicketBO.builder()
+                .ticket(ticket)
+                .appKey(appKey)
+                .appSecret(appSecret)
+                .scope(Constants.DEFAULT_SCOPE).build();
+        String ticketKey = ticket + ":" + Constants.DEFAULT_SCOPE;
+        redisUtils.set(ticketKey, ticket, Constants.TICKET_EXPIRES_TIME);
+        return newTicket;
     }
+
 
     /**
      * 根据Refresh Token值获取Refresh Token
@@ -80,9 +120,12 @@ public class OauthServiceImpl implements OauthService {
      * @return
      */
     @Override
-    public AuthRefreshTokenBO findRefreshToken(String refreshToken) {
-        return null;
+    public AccessTokenBO findRefreshToken(String refreshToken) {
+        TokenEntity tokenEntity = tokenMapper.selectByRefreshToken(refreshToken);
+        log.info(String.format("Find token %s", tokenEntity.toString()));
+        return AccessTokenBO.fromEntity(tokenEntity);
     }
+
 
     /**
      * 根据TokenId 查找Access Token
@@ -92,16 +135,32 @@ public class OauthServiceImpl implements OauthService {
      */
     @Override
     public AccessTokenBO findTokenByTokenId(String tokenId) {
-        return null;
+        TokenEntity tokenEntity = tokenMapper.selectByTokenId(tokenId);
+        log.info(String.format("Find token %s", tokenEntity.toString()));
+        return AccessTokenBO.fromEntity(tokenEntity);
     }
 
-    @Override
-    public void expireTicket(String ticket) {
 
+    /**
+     * 设置ticket过期
+     *
+     * @param ticket
+     */
+    @Override
+    public void expiresTicket(String ticket) {
+        String ticketKey = ticket + ":" + Constants.DEFAULT_SCOPE;
+        redisUtils.set(ticketKey, ticket, 0L);
     }
 
-    @Override
-    public void expireToken(String token) {
 
+    /**
+     * 设置Tocken过期
+     *
+     * @param token
+     */
+    @Override
+    public void expiresToken(String token) {
+        String tokenKey = token + ":" + Constants.DEFAULT_SCOPE;
+        redisUtils.set(tokenKey, token, 0L);
     }
 }

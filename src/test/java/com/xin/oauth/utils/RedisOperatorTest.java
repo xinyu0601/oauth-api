@@ -16,7 +16,7 @@ public class RedisOperatorTest extends OauthApplicationTests {
     private static final Log log = LogFactory.getLog(RedisOperatorTest.class);
 
     @Autowired
-    private RedisOperator redisOperator;
+    private RedisUtils redisOperator;
 
     @Test
     public void testSetKey() {

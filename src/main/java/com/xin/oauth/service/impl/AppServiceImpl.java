@@ -4,10 +4,15 @@ import com.xin.oauth.mapper.AppMapper;
 import com.xin.oauth.models.bo.AppBO;
 import com.xin.oauth.models.entity.AppEntity;
 import com.xin.oauth.service.AppService;
+import com.xin.oauth.utils.token.AppKeyGenerator;
+import com.xin.oauth.utils.token.AppSecretGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author xinyu.huang02
@@ -17,14 +22,79 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppServiceImpl implements AppService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(AppServiceImpl.class);
 
     @Autowired
     private AppMapper appMapper;
 
+    @Autowired
+    private AppKeyGenerator appKeyGenerator;
 
-    public void saveApp(AppBO appBO) {
+    @Autowired
+    private AppSecretGenerator appSecretGenerator;
+
+
+    /**
+     * 注册新的APP
+     *
+     * @param appBO
+     */
+    public AppBO registerApp(AppBO appBO) {
+        log.info(String.format("Register new app [%s]", appBO.toString()));
+        AppEntity newApp = AppEntity.fromBO(appBO);
+        String appKey = appKeyGenerator.generate();
+        String appSecret = appSecretGenerator.generate();
+        newApp.setAppKey(appKey);
+        newApp.setAppSecret(appSecret);
+        appMapper.insert(newApp);
+        return AppBO.fromEntity(newApp);
     }
+
+
+    /**
+     * 根据AppId删除App
+     *
+     * @param appId
+     */
+    @Override
+    public void removeApp(String appId) {
+        log.info(String.format("Remove app id = %s", appId));
+        appMapper.delete(Long.valueOf(appId));
+    }
+
+
+    /**
+     * 更新APP
+     *
+     * @param appId
+     * @param appBO
+     */
+    @Override
+    public AppBO updateApp(String appId, AppBO appBO) {
+        AppEntity appEntity = appMapper.selectByAppId(appId);
+        appEntity.updateFromBO(appBO);
+        appMapper.update(appEntity);
+        AppEntity updatedAppEntity = appMapper.selectByAppId(appId);
+        return AppBO.fromEntity(updatedAppEntity);
+    }
+
+
+    /**
+     * 通过UID，返回APP列表
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<AppBO> all(String userId) {
+        List<AppEntity> appEntities = appMapper.selectByUserId(userId);
+        List<AppBO> appBOS = new ArrayList<>(appEntities.size());
+        for (AppEntity appEntity : appEntities) {
+            appBOS.add(AppBO.fromEntity(appEntity));
+        }
+        return appBOS;
+    }
+
 
     /**
      * 验证AppKey和AppSecret对应的App是否存在
@@ -35,10 +105,11 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public boolean verifyByAppKeyAndAppSecret(String appKey, String appSecret) {
-        logger.info("Find app when app = {}, appSecret = {}", appKey, appSecret);
+        log.info("Find app when app = {}, appSecret = {}", appKey, appSecret);
         AppEntity appEntity = appMapper.selectByAppKeyAndAppSecret(appKey, appSecret);
         return appEntity != null;
     }
+
 
     /**
      * 通过AppKey和AppSecret查找App
@@ -49,12 +120,12 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public AppBO findByAppKeyAndAppSecret(String appKey, String appSecret) {
-        logger.info("Find app when app = {}, appSecret = {}", appKey, appSecret);
+        log.info("Find app when app = {}, appSecret = {}", appKey, appSecret);
         AppEntity appEntity = appMapper.selectByAppKeyAndAppSecret(appKey, appSecret);
         if (appEntity == null) {
             return null;
         }
-        logger.info("Find app {}", appEntity.toString());
+        log.info("Find app {}", appEntity.toString());
         return AppBO.fromEntity(appEntity);
     }
 }

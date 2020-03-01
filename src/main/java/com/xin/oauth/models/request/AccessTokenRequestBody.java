@@ -17,6 +17,8 @@ public class AccessTokenRequestBody {
 
     private String ticket;
 
+    private String scope;
+
     private String appKey;
 
     private String appSecret;

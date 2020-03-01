@@ -1,6 +1,7 @@
 package com.xin.oauth.models.ao;
 
 import com.xin.oauth.models.bo.AccessTokenBO;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,17 +14,24 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class AccessTokenAO {
 
     private String accessToken;
 
-    private Long expireAt;
+    private String refreshToken;
+
+    private String scope;
+
+    private Long expiresIn;
 
     public static AccessTokenAO fromBO(AccessTokenBO accessTokenBO) {
         if (accessTokenBO == null)
             return new AccessTokenAO();
         return AccessTokenAO.builder()
                 .accessToken(accessTokenBO.getAccessToken())
-                .expireAt(accessTokenBO.getExpireAt()).build();
+                .refreshToken(accessTokenBO.getRefreshToken())
+                .scope(accessTokenBO.getScope())
+                .expiresIn(accessTokenBO.getExpiresIn()).build();
     }
 }
