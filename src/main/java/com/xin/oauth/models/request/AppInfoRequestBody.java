@@ -24,7 +24,7 @@ public class AppInfoRequestBody {
 
     private String callbackUrl;
 
-    private String userId;
+    private Long userId;
 
     private boolean isOpen;
 }

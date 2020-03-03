@@ -144,7 +144,7 @@ public class OauthController {
     @ApiOperation(value = "App主动更新Access Token接口")
     public ResultAO<AccessTokenAO> refreshToken(@RequestBody RefreshTokenRequestBody refreshTokenRequestBody) {
         String refreshToken = refreshTokenRequestBody.getRefreshToken();
-        String tokenId = refreshTokenRequestBody.getTokenId();
+        Long tokenId = refreshTokenRequestBody.getTokenId();
         AccessTokenBO authRefreshTokenBO = oauthService.findRefreshToken(refreshToken);
         if (authRefreshTokenBO == null)
             throw new TokenException(String.format("Refresh token [%s] not found", refreshToken));

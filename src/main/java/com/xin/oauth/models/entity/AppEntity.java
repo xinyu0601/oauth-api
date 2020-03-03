@@ -1,6 +1,7 @@
 package com.xin.oauth.models.entity;
 
 import com.xin.oauth.models.bo.AppBO;
+import com.xin.oauth.utils.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +33,9 @@ public class AppEntity {
 
     private String createTime;
 
-    private String userId;
+    private String updateTime;
+
+    private Long userId;
 
     private boolean isOpen;
 
@@ -41,8 +44,9 @@ public class AppEntity {
         this.appSecret = appBO.getAppSecret();
         this.appKey = appBO.getAppKey();
         this.description = appBO.getDescription();
-        this.callbackUrl = appBO.getDescription();
+        this.callbackUrl = appBO.getCallbackUrl();
         this.isOpen = appBO.isOpen();
+        this.updateTime = DateUtils.currentTimeStr();
     }
 
     public static AppEntity fromBO(AppBO appBO) {
@@ -51,9 +55,10 @@ public class AppEntity {
                 .appSecret(appBO.getAppSecret())
                 .appKey(appBO.getAppKey())
                 .description(appBO.getDescription())
-                .callbackUrl(appBO.getDescription())
+                .callbackUrl(appBO.getCallbackUrl())
                 .isOpen(appBO.isOpen())
                 .createTime(appBO.getCreateTime())
+                .userId(appBO.getUserId())
                 .build();
     }
 }

@@ -13,8 +13,6 @@ public class RefreshTokenRequestBody {
 
     private String refreshToken;
 
-    private String tokenId;
-
-
-
+    private Long tokenId;
+    
 }

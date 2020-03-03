@@ -15,6 +15,8 @@ import lombok.Data;
 @Builder
 public class AppBO {
 
+    private Long appId;
+
     private String appName;
 
     private String appSecret;
@@ -27,7 +29,9 @@ public class AppBO {
 
     private String createTime;
 
-    private String userId;
+    private String updateTime;
+
+    private Long userId;
 
     private boolean isOpen;
 
@@ -42,12 +46,16 @@ public class AppBO {
 
     public static AppBO fromEntity(AppEntity appEntity) {
         return AppBO.builder()
+                .appId(appEntity.getId())
+                .description(appEntity.getDescription())
                 .appKey(appEntity.getAppKey())
+                .userId(appEntity.getUserId())
                 .appName(appEntity.getAppName())
                 .appKey(appEntity.getAppKey())
                 .appSecret(appEntity.getAppSecret())
                 .callbackUrl(appEntity.getCallbackUrl())
                 .isOpen(appEntity.isOpen())
+                .updateTime(appEntity.getUpdateTime())
                 .createTime(appEntity.getCreateTime()).build();
     }
 

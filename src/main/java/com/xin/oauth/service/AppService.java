@@ -15,11 +15,13 @@ public interface AppService {
 
     AppBO registerApp(AppBO appBO);
 
-    void removeApp(String appId);
+    void removeApp(Long appId);
 
-    AppBO updateApp(String appId, AppBO appBO);
+    void removeByAppName(String appName);
 
-    List<AppBO> all(String userId);
+    AppBO updateApp(Long appId, AppBO appBO);
+
+    List<AppBO> all(Long userId);
 
     boolean verifyByAppKeyAndAppSecret(String appKey, String appSecret);
 

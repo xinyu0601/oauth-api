@@ -12,7 +12,9 @@ public interface OauthService {
 
     boolean verifyTicket(TicketBO ticketBO);
 
-    boolean verifyAccessToken(String accessToken);
+    boolean verifyAccessToken(AccessTokenBO accessToken);
+
+    void removeAccessTokenById(Long tokenId);
 
     AccessTokenBO generateAccessToken(String appKey, String appSecret);
 
@@ -20,7 +22,7 @@ public interface OauthService {
 
     AccessTokenBO findRefreshToken(String refreshToken);
 
-    AccessTokenBO findTokenByTokenId(String tokenId);
+    AccessTokenBO findTokenByTokenId(Long tokenId);
 
     void expiresTicket(String ticket);
 

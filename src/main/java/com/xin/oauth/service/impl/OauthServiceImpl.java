@@ -1,11 +1,13 @@
 package com.xin.oauth.service.impl;
 
 import com.xin.oauth.constants.Constants;
+import com.xin.oauth.exceptions.TokenException;
 import com.xin.oauth.mapper.TokenMapper;
 import com.xin.oauth.models.bo.AccessTokenBO;
 import com.xin.oauth.models.bo.TicketBO;
 import com.xin.oauth.models.entity.TokenEntity;
 import com.xin.oauth.service.OauthService;
+import com.xin.oauth.utils.DateUtils;
 import com.xin.oauth.utils.RedisUtils;
 import com.xin.oauth.utils.token.AccessTokenGenerator;
 import com.xin.oauth.utils.token.RefreshTokenGenerator;
@@ -61,9 +63,21 @@ public class OauthServiceImpl implements OauthService {
      * @return
      */
     @Override
-    public boolean verifyAccessToken(String accessToken) {
-        String accessTokenValue = redisUtils.get(accessToken + ":scope");
+    public boolean verifyAccessToken(AccessTokenBO accessToken) {
+        String accessTokenValue = redisUtils.get(accessToken.getAccessToken() + ":scope");
         return StringUtils.isNotBlank(accessTokenValue);
+    }
+
+
+    /**
+     * 根据TokenId删除token
+     *
+     * @param tokenId
+     */
+    @Override
+    public void removeAccessTokenById(Long tokenId) {
+        log.info(String.format("Delete access token [%d]", tokenId));
+        tokenMapper.deleteByTokenId(tokenId);
     }
 
 
@@ -82,14 +96,17 @@ public class OauthServiceImpl implements OauthService {
                 .refreshToken(refreshToken)
                 .appKey(appKey)
                 .appSecret(appSecret)
+                .expiresIn(DateUtils.currentTimeAfterDay())
                 .scope(Constants.DEFAULT_SCOPE).build();
         TokenEntity newTokenEntity = TokenEntity.fromBO(accessTokenBO);
         tokenMapper.insert(newTokenEntity);
+        newTokenEntity = tokenMapper.selectByAccessToken(accessToken);
+        if (newTokenEntity == null)
+            throw new TokenException("Insert token failed");
         log.info("Insert access token " + newTokenEntity.toString());
-
         String tokenKey = accessToken + ":" + Constants.DEFAULT_SCOPE;
         redisUtils.set(tokenKey, accessToken, Constants.TOKEN_EXPIRES_TIME);
-        return accessTokenBO;
+        return AccessTokenBO.fromEntity(newTokenEntity);
     }
 
 
@@ -134,7 +151,7 @@ public class OauthServiceImpl implements OauthService {
      * @return
      */
     @Override
-    public AccessTokenBO findTokenByTokenId(String tokenId) {
+    public AccessTokenBO findTokenByTokenId(Long tokenId) {
         TokenEntity tokenEntity = tokenMapper.selectByTokenId(tokenId);
         log.info(String.format("Find token %s", tokenEntity.toString()));
         return AccessTokenBO.fromEntity(tokenEntity);
@@ -149,7 +166,7 @@ public class OauthServiceImpl implements OauthService {
     @Override
     public void expiresTicket(String ticket) {
         String ticketKey = ticket + ":" + Constants.DEFAULT_SCOPE;
-        redisUtils.set(ticketKey, ticket, 0L);
+        redisUtils.del(ticketKey);
     }
 
 
@@ -161,6 +178,6 @@ public class OauthServiceImpl implements OauthService {
     @Override
     public void expiresToken(String token) {
         String tokenKey = token + ":" + Constants.DEFAULT_SCOPE;
-        redisUtils.set(tokenKey, token, 0L);
+        redisUtils.del(tokenKey);
     }
 }

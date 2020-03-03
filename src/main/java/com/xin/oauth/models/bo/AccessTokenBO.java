@@ -13,6 +13,8 @@ import lombok.Data;
 @Builder
 public class AccessTokenBO {
 
+    private Long tokenId;
+
     private String accessToken;
 
     private Long expiresIn;
@@ -29,6 +31,7 @@ public class AccessTokenBO {
         if (tokenEntity == null)
             return null;
         return AccessTokenBO.builder()
+                .tokenId(tokenEntity.getId())
                 .accessToken(tokenEntity.getAccessToken())
                 .refreshToken(tokenEntity.getRefreshToken())
                 .expiresIn(tokenEntity.getExpiresIn())

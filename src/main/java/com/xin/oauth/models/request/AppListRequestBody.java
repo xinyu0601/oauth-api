@@ -13,5 +13,5 @@ import lombok.Data;
 @Builder
 public class AppListRequestBody {
 
-    private String userId;
+    private Long userId;
 }

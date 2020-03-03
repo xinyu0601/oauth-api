@@ -1,5 +1,6 @@
 package com.xin.oauth.service.impl;
 
+import com.xin.oauth.exceptions.AppException;
 import com.xin.oauth.mapper.AppMapper;
 import com.xin.oauth.models.bo.AppBO;
 import com.xin.oauth.models.entity.AppEntity;
@@ -40,13 +41,17 @@ public class AppServiceImpl implements AppService {
      * @param appBO
      */
     public AppBO registerApp(AppBO appBO) {
-        log.info(String.format("Register new app [%s]", appBO.toString()));
         AppEntity newApp = AppEntity.fromBO(appBO);
         String appKey = appKeyGenerator.generate();
         String appSecret = appSecretGenerator.generate();
         newApp.setAppKey(appKey);
         newApp.setAppSecret(appSecret);
+        log.info(String.format("Register new app [%s]", newApp.toString()));
         appMapper.insert(newApp);
+        newApp = appMapper.selectByAppKeyAndAppSecret(appKey, appSecret);
+        if (newApp == null)
+            throw new AppException(String.format("Insert app %s failed", appBO.toString()));
+        log.info(String.format("New app entity = [%s]", newApp.toString()));
         return AppBO.fromEntity(newApp);
     }
 
@@ -57,9 +62,20 @@ public class AppServiceImpl implements AppService {
      * @param appId
      */
     @Override
-    public void removeApp(String appId) {
+    public void removeApp(Long appId) {
         log.info(String.format("Remove app id = %s", appId));
-        appMapper.delete(Long.valueOf(appId));
+        appMapper.delete(appId);
+    }
+
+    /**
+     * 根据App Name删除App
+     *
+     * @param appName
+     */
+    @Override
+    public void removeByAppName(String appName) {
+        log.info(String.format("Remove app name = %s", appName));
+        appMapper.deleteByAppName(appName);
     }
 
 
@@ -70,7 +86,7 @@ public class AppServiceImpl implements AppService {
      * @param appBO
      */
     @Override
-    public AppBO updateApp(String appId, AppBO appBO) {
+    public AppBO updateApp(Long appId, AppBO appBO) {
         AppEntity appEntity = appMapper.selectByAppId(appId);
         appEntity.updateFromBO(appBO);
         appMapper.update(appEntity);
@@ -86,7 +102,7 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     @Override
-    public List<AppBO> all(String userId) {
+    public List<AppBO> all(Long userId) {
         List<AppEntity> appEntities = appMapper.selectByUserId(userId);
         List<AppBO> appBOS = new ArrayList<>(appEntities.size());
         for (AppEntity appEntity : appEntities) {

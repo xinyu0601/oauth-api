@@ -1,0 +1,1 @@
+create table token ( id int(20) not null primary key, access_token varchar(40), refresh_token varchar(40), app_key varchar(40), app_secret varchar(40), expires_in int(20) , grant_type varchar(20), scope varchar(20));

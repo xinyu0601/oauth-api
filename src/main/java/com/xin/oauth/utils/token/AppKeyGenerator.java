@@ -1,5 +1,6 @@
 package com.xin.oauth.utils.token;
 
+import com.xin.oauth.utils.EncryptUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppKeyGenerator {
 
+    private static final int APP_KEY_SIZE = 24;
+
     public String generate() {
-        return null;
+        return EncryptUtils.generateRandomStr(APP_KEY_SIZE);
     }
 
 }

@@ -4,6 +4,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 
+import java.util.Random;
+
 
 /**
  * @author xinyu.huang02
@@ -12,6 +14,21 @@ import org.apache.commons.codec.digest.HmacUtils;
  */
 public class EncryptUtils {
 
+    private static final String CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    /**
+     * 生成随机长度的字符串
+     *
+     * @param num
+     * @return
+     */
+    public static String generateRandomStr(final int num) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= num; i++) {
+            sb.append(CHARS.charAt(new Random().nextInt(CHARS.length())));
+        }
+        return sb.toString();
+    }
 
     /**
      * 使用sha1加密

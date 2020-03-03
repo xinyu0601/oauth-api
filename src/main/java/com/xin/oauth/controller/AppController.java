@@ -60,7 +60,7 @@ public class AppController {
      */
     @DeleteMapping("/remove/{id:.*}")
     @ApiOperation(value = "根据ID删除App")
-    public ResultAO<String> removeApp(@PathVariable("id") String id) {
+    public ResultAO<String> removeApp(@PathVariable("id") Long id) {
         appService.removeApp(id);
         return new ResultAO<>(ResultCodeEnum.COMMON_SUCCESS, String.format("Remove app [%s] success", id));
     }
@@ -74,7 +74,7 @@ public class AppController {
     @GetMapping("/all")
     @ApiOperation(value = "获取所有App信息")
     public ResultAO<List<AppAO>> allApp(@RequestBody AppListRequestBody appListRequestBody) {
-        String userId = appListRequestBody.getUserId();
+        Long userId = appListRequestBody.getUserId();
         List<AppBO> apps = appService.all(userId);
         AppListAO appListAO = AppListAO.builder().build();
         appListAO.addApps(apps);
@@ -91,7 +91,7 @@ public class AppController {
      */
     @PutMapping("/update/{id:.*}")
     @ApiOperation(value = "更新App信息")
-    public ResultAO<AppAO> updateApp(@PathVariable("id") String id,
+    public ResultAO<AppAO> updateApp(@PathVariable("id") Long id,
                                      AppInfoRequestBody appInfoRequestBody) {
         AppBO appBO = AppBO.fromBody(appInfoRequestBody);
         appBO = appService.updateApp(id, appBO);
