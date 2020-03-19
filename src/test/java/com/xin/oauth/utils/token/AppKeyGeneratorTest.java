@@ -1,5 +1,6 @@
 package com.xin.oauth.utils.token;
 
+import com.xin.oauth.utils.token.impl.AppKeyGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

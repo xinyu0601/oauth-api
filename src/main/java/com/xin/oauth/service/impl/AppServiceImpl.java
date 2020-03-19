@@ -1,14 +1,16 @@
 package com.xin.oauth.service.impl;
 
+import com.xin.oauth.enums.KeyTypeEnum;
 import com.xin.oauth.exceptions.AppException;
 import com.xin.oauth.mapper.AppMapper;
 import com.xin.oauth.models.bo.AppBO;
 import com.xin.oauth.models.entity.AppEntity;
 import com.xin.oauth.service.AppService;
-import com.xin.oauth.utils.token.AppKeyGenerator;
-import com.xin.oauth.utils.token.AppSecretGenerator;
+import com.xin.oauth.utils.token.KeyGenerator;
+import com.xin.oauth.utils.token.impl.AppKeyGenerator;
+import com.xin.oauth.utils.token.impl.AppSecretGenerator;
+import com.xin.oauth.utils.token.impl.KeyGeneratorFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jni.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +30,6 @@ public class AppServiceImpl implements AppService {
     @Autowired
     private AppMapper appMapper;
 
-    @Autowired
-    private AppKeyGenerator appKeyGenerator;
-
-    @Autowired
-    private AppSecretGenerator appSecretGenerator;
-
 
     /**
      * 注册新的APP
@@ -42,6 +38,9 @@ public class AppServiceImpl implements AppService {
      */
     public AppBO registerApp(AppBO appBO) {
         AppEntity newApp = AppEntity.fromBO(appBO);
+
+        KeyGenerator appKeyGenerator = KeyGeneratorFactory.createKeyGenerator(KeyTypeEnum.appKey);
+        KeyGenerator appSecretGenerator = KeyGeneratorFactory.createKeyGenerator(KeyTypeEnum.appSecret);
         String appKey = appKeyGenerator.generate();
         String appSecret = appSecretGenerator.generate();
         newApp.setAppKey(appKey);

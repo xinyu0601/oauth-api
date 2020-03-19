@@ -1,11 +1,11 @@
-package com.xin.oauth.utils.token;
+package com.xin.oauth.utils.token.impl;
 
 import com.xin.oauth.exceptions.TokenException;
 import com.xin.oauth.utils.DateUtils;
 import com.xin.oauth.utils.EncryptUtils;
+import com.xin.oauth.utils.token.AbstractKeyGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 
 /**
@@ -13,9 +13,8 @@ import org.springframework.stereotype.Component;
  * @date 2020-02-29 16:28
  * @class Refresh NeedToken Generator
  */
-@Component
 @Slf4j
-public class RefreshTokenGenerator {
+public class RefreshTokenGenerator extends AbstractKeyGenerator {
 
     private static final String TOKEN_FORMAT = "1.%s";
 

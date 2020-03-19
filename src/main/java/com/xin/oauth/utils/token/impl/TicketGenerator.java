@@ -1,11 +1,11 @@
-package com.xin.oauth.utils.token;
+package com.xin.oauth.utils.token.impl;
 
 import com.xin.oauth.exceptions.TokenException;
 import com.xin.oauth.utils.DateUtils;
 import com.xin.oauth.utils.EncryptUtils;
+import com.xin.oauth.utils.token.AbstractKeyGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 
 /**
@@ -13,9 +13,8 @@ import org.springframework.stereotype.Component;
  * @date 2020-02-27 14:48
  * @class Ticket 生成器
  */
-@Component
 @Slf4j
-public class TicketGenerator {
+public class TicketGenerator extends AbstractKeyGenerator {
 
     public String generate(String appKey, String scope) {
         if (StringUtils.isBlank(appKey) || StringUtils.isBlank(scope))

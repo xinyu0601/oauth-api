@@ -1,6 +1,9 @@
 package com.xin.oauth.utils.token;
 
 import com.xin.oauth.exceptions.TokenException;
+import com.xin.oauth.utils.token.impl.AppKeyGenerator;
+import com.xin.oauth.utils.token.impl.AppSecretGenerator;
+import com.xin.oauth.utils.token.impl.RefreshTokenGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

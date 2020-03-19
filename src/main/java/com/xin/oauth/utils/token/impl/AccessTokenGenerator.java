@@ -1,24 +1,23 @@
-package com.xin.oauth.utils.token;
+package com.xin.oauth.utils.token.impl;
 
 
 import com.xin.oauth.exceptions.TokenException;
 import com.xin.oauth.utils.DateUtils;
 import com.xin.oauth.utils.EncryptUtils;
+import com.xin.oauth.utils.token.AbstractKeyGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 /**
  * @author xinyu.huang02
  * @date 2020-02-27 14:47
  * @class Access NeedToken Generator
  */
-@Component
+
 @Slf4j
-public class AccessTokenGenerator {
+public class AccessTokenGenerator extends AbstractKeyGenerator {
 
     private static final String TOKEN_FORMAT = "1.%s";
-
 
     public String generate(String appkey, String appSecret) {
         if (StringUtils.isBlank(appkey) || StringUtils.isBlank(appSecret))

@@ -3,8 +3,8 @@ package com.xin.oauth.service;
 import com.xin.oauth.OauthApplicationTests;
 import com.xin.oauth.models.bo.AccessTokenBO;
 import com.xin.oauth.models.bo.TicketBO;
-import com.xin.oauth.utils.token.AppKeyGenerator;
-import com.xin.oauth.utils.token.AppSecretGenerator;
+import com.xin.oauth.utils.token.impl.AppKeyGenerator;
+import com.xin.oauth.utils.token.impl.AppSecretGenerator;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;

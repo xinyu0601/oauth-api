@@ -1,6 +1,7 @@
 package com.xin.oauth.service.impl;
 
 import com.xin.oauth.constants.Constants;
+import com.xin.oauth.enums.KeyTypeEnum;
 import com.xin.oauth.exceptions.TokenException;
 import com.xin.oauth.mapper.TokenMapper;
 import com.xin.oauth.models.bo.AccessTokenBO;
@@ -9,9 +10,8 @@ import com.xin.oauth.models.entity.TokenEntity;
 import com.xin.oauth.service.OauthService;
 import com.xin.oauth.utils.DateUtils;
 import com.xin.oauth.utils.RedisUtils;
-import com.xin.oauth.utils.token.AccessTokenGenerator;
-import com.xin.oauth.utils.token.RefreshTokenGenerator;
-import com.xin.oauth.utils.token.TicketGenerator;
+import com.xin.oauth.utils.token.KeyGenerator;
+import com.xin.oauth.utils.token.impl.KeyGeneratorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +28,6 @@ public class OauthServiceImpl implements OauthService {
 
     @Autowired
     private RedisUtils redisUtils;
-
-    @Autowired
-    private AccessTokenGenerator accessTokenGenerator;
-
-    @Autowired
-    private TicketGenerator ticketGenerator;
-
-    @Autowired
-    private RefreshTokenGenerator refreshTokenGenerator;
 
     @Autowired
     private TokenMapper tokenMapper;
@@ -124,9 +115,13 @@ public class OauthServiceImpl implements OauthService {
      */
     @Override
     public AccessTokenBO generateAccessToken(String appKey, String appSecret) {
+        KeyGenerator accessTokenGenerator = KeyGeneratorFactory.createKeyGenerator(KeyTypeEnum.accessToken);
         String accessToken = accessTokenGenerator.generate(appKey, appSecret);
+
+        KeyGenerator refreshTokenGenerator = KeyGeneratorFactory.createKeyGenerator(KeyTypeEnum.refreshToken);
         String refreshToken = refreshTokenGenerator.generate(appKey, appSecret);
         log.info(String.format("Generate accessToken = %s, refrestToken = %s", accessToken, refreshToken));
+
         AccessTokenBO accessTokenBO = AccessTokenBO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -153,6 +148,7 @@ public class OauthServiceImpl implements OauthService {
      */
     @Override
     public TicketBO generateTicket(String appKey, String appSecret) {
+        KeyGenerator ticketGenerator = KeyGeneratorFactory.createKeyGenerator(KeyTypeEnum.ticket);
         String ticket = ticketGenerator.generate(appKey, appSecret);
         log.info(String.format("Generate ticket = %s", ticket));
         TicketBO newTicket = TicketBO.builder()
