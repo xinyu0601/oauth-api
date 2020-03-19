@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author xinyu.huang02
  * @date 2020-02-25 23:20
- * @class TODO
+ * @class Result Code Enum
  */
 public enum ResultCodeEnum {
 

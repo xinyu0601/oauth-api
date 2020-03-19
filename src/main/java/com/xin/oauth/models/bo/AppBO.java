@@ -2,6 +2,7 @@ package com.xin.oauth.models.bo;
 
 import com.xin.oauth.models.entity.AppEntity;
 import com.xin.oauth.models.request.AppInfoRequestBody;
+import com.xin.oauth.models.request.UpdateAppRequestBody;
 import lombok.Builder;
 import lombok.Data;
 
@@ -35,7 +36,15 @@ public class AppBO {
 
     private boolean isOpen;
 
-    public static AppBO fromBody(AppInfoRequestBody body) {
+    public static AppBO fromUpdateBody(UpdateAppRequestBody body) {
+        return AppBO.builder()
+                .appName(body.getAppName())
+                .callbackUrl(body.getCallbackUrl())
+                .description(body.getDescription())
+                .isOpen(body.isOpen()).build();
+    }
+
+    public static AppBO fromRegisterBody(AppInfoRequestBody body) {
         return AppBO.builder()
                 .appName(body.getAppName())
                 .callbackUrl(body.getCallbackUrl())

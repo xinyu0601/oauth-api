@@ -1,6 +1,7 @@
 package com.xin.oauth.service.impl;
 
 import com.xin.oauth.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,17 +11,19 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     /**
      * 通过用户名和密码验证用户身份
+     *
      * @param userName
      * @param password
      * @return
      */
     @Override
     public boolean verifyUser(String userName, String password) {
-        return false;
+        return true;
     }
 
 }

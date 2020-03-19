@@ -1,6 +1,7 @@
 package com.xin.oauth.service.impl;
 
 import com.xin.oauth.service.SMSService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -10,11 +11,12 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@Slf4j
 public class SMSServiceImpl implements SMSService {
 
     @Override
     public boolean verifySMSCode(String code) {
-        return false;
+        return true;
     }
 
 }

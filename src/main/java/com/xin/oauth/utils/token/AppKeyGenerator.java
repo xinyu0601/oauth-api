@@ -1,6 +1,7 @@
 package com.xin.oauth.utils.token;
 
 import com.xin.oauth.utils.EncryptUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
+@Slf4j
 public class AppKeyGenerator {
 
     private static final int APP_KEY_SIZE = 24;

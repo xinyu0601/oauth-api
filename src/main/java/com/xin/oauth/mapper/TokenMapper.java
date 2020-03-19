@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 /**
  * @author xinyu.huang02
  * @date 2020-02-29 16:42
- * @class Token Mapper
+ * @class NeedToken Mapper
  */
 @Repository
 public interface TokenMapper {

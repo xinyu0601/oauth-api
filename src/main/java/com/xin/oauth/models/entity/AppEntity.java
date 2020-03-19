@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author xinyu.huang02
@@ -40,11 +41,16 @@ public class AppEntity {
     private boolean isOpen;
 
     public void updateFromBO(AppBO appBO) {
-        this.appName = appBO.getAppName();
-        this.appSecret = appBO.getAppSecret();
-        this.appKey = appBO.getAppKey();
-        this.description = appBO.getDescription();
-        this.callbackUrl = appBO.getCallbackUrl();
+        if (StringUtils.isNotBlank(appBO.getAppName()))
+            this.appName = appBO.getAppName();
+        if (StringUtils.isNotBlank(appBO.getAppSecret()))
+            this.appSecret = appBO.getAppSecret();
+        if (StringUtils.isNotBlank(appBO.getAppKey()))
+            this.appKey = appBO.getAppKey();
+        if (StringUtils.isNotBlank(appBO.getDescription()))
+            this.description = appBO.getDescription();
+        if (StringUtils.isNotBlank(appBO.getCallbackUrl()))
+            this.callbackUrl = appBO.getCallbackUrl();
         this.isOpen = appBO.isOpen();
         this.updateTime = DateUtils.currentTimeStr();
     }
@@ -57,7 +63,8 @@ public class AppEntity {
                 .description(appBO.getDescription())
                 .callbackUrl(appBO.getCallbackUrl())
                 .isOpen(appBO.isOpen())
-                .createTime(appBO.getCreateTime())
+                .createTime(DateUtils.currentTimeStr())
+                .updateTime(DateUtils.currentTimeStr())
                 .userId(appBO.getUserId())
                 .build();
     }

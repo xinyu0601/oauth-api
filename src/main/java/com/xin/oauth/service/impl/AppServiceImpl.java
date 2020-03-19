@@ -7,8 +7,7 @@ import com.xin.oauth.models.entity.AppEntity;
 import com.xin.oauth.service.AppService;
 import com.xin.oauth.utils.token.AppKeyGenerator;
 import com.xin.oauth.utils.token.AppSecretGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +20,8 @@ import java.util.List;
  * @class App业务实现类
  */
 @Service
+@Slf4j
 public class AppServiceImpl implements AppService {
-
-    private static final Logger log = LoggerFactory.getLogger(AppServiceImpl.class);
 
     @Autowired
     private AppMapper appMapper;
@@ -104,6 +102,9 @@ public class AppServiceImpl implements AppService {
     @Override
     public List<AppBO> all(Long userId) {
         List<AppEntity> appEntities = appMapper.selectByUserId(userId);
+        if (appEntities == null)
+            return new ArrayList<>(0);
+        log.info("get app entitiys {}", appEntities.toString());
         List<AppBO> appBOS = new ArrayList<>(appEntities.size());
         for (AppEntity appEntity : appEntities) {
             appBOS.add(AppBO.fromEntity(appEntity));

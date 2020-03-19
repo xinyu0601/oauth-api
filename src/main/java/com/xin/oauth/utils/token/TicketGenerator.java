@@ -3,9 +3,8 @@ package com.xin.oauth.utils.token;
 import com.xin.oauth.exceptions.TokenException;
 import com.xin.oauth.utils.DateUtils;
 import com.xin.oauth.utils.EncryptUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 
@@ -15,9 +14,8 @@ import org.springframework.stereotype.Component;
  * @class Ticket 生成器
  */
 @Component
+@Slf4j
 public class TicketGenerator {
-
-    private static final Logger log = LoggerFactory.getLogger(AccessTokenGenerator.class);
 
     public String generate(String appKey, String scope) {
         if (StringUtils.isBlank(appKey) || StringUtils.isBlank(scope))

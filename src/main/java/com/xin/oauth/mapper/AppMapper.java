@@ -15,8 +15,8 @@ import java.util.List;
 @Repository
 public interface AppMapper {
 
-    @Insert("INSERT INTO app(app_name, app_secret, app_key, description, callback_url, user_id, create_time, is_open) VALUES(#{appName}, #{appSecret}, " +
-            "#{appKey}, #{description}, #{callbackUrl}, #{userId}, #{createTime}, #{isOpen})")
+    @Insert("INSERT INTO app(app_name, app_secret, app_key, description, callback_url, user_id, create_time, is_open, update_time) VALUES(#{appName}, #{appSecret}, " +
+            "#{appKey}, #{description}, #{callbackUrl}, #{userId}, #{createTime}, #{isOpen}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     void insert(AppEntity app);
 
@@ -105,7 +105,7 @@ public interface AppMapper {
     int total();
 
 
-    @Select("SELECT id, create_time, is_open, app_name, app_secret, app_key, description, callback_url " +
+    @Select("SELECT id, create_time, is_open, app_name, app_secret, app_key, description, callback_url, update_time, user_id " +
             "FROM app WHERE user_id = #{userId} AND is_open = 1")
     @Results({
             @Result(column = "create_time", property = "createTime"),
@@ -113,6 +113,8 @@ public interface AppMapper {
             @Result(column = "app_name", property = "appName"),
             @Result(column = "app_secret", property = "appSecret"),
             @Result(column = "app_key", property = "appKey"),
+            @Result(column = "update_time", property = "updateTime"),
+            @Result(column = "user_id", property = "userId"),
             @Result(column = "callback_url", property = "callbackUrl")
     })
     List<AppEntity> selectByUserId(Long userId);

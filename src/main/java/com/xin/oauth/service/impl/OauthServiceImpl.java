@@ -12,9 +12,8 @@ import com.xin.oauth.utils.RedisUtils;
 import com.xin.oauth.utils.token.AccessTokenGenerator;
 import com.xin.oauth.utils.token.RefreshTokenGenerator;
 import com.xin.oauth.utils.token.TicketGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +23,8 @@ import org.springframework.stereotype.Service;
  * @class Oauth 业务实现类
  */
 @Service
+@Slf4j
 public class OauthServiceImpl implements OauthService {
-
-    private static final Logger log = LoggerFactory.getLogger(OauthServiceImpl.class);
 
     @Autowired
     private RedisUtils redisUtils;
@@ -57,6 +55,19 @@ public class OauthServiceImpl implements OauthService {
 
 
     /**
+     * 验证ticket token是否有效
+     *
+     * @param ticket
+     * @return
+     */
+    @Override
+    public boolean verifyTicket(String ticket) {
+        String scopeValue = redisUtils.get(ticket + ":scope");
+        return StringUtils.isNotBlank(scopeValue);
+    }
+
+
+    /**
      * 验证access token 是否有效
      *
      * @param accessToken
@@ -66,6 +77,31 @@ public class OauthServiceImpl implements OauthService {
     public boolean verifyAccessToken(AccessTokenBO accessToken) {
         String accessTokenValue = redisUtils.get(accessToken.getAccessToken() + ":scope");
         return StringUtils.isNotBlank(accessTokenValue);
+    }
+
+
+    /**
+     * 验证access token 是否有效
+     *
+     * @param accessToken
+     * @return
+     */
+    @Override
+    public boolean verifyAccessToken(String accessToken) {
+        String accessTokenValue = redisUtils.get(accessToken + ":scope");
+        return StringUtils.isNotBlank(accessTokenValue);
+    }
+
+    /**
+     * 验证refresh token 是否有效
+     *
+     * @param refreshToken
+     * @return
+     */
+    @Override
+    public boolean verifyRefreshToken(String refreshToken) {
+        TokenEntity tokenEntity = tokenMapper.selectByRefreshToken(refreshToken);
+        return tokenEntity != null;
     }
 
 
@@ -131,21 +167,20 @@ public class OauthServiceImpl implements OauthService {
 
 
     /**
-     * 根据Refresh Token值获取Refresh Token
+     * 通过token值查找accessToken
      *
-     * @param refreshToken
+     * @param accessToken
      * @return
      */
     @Override
-    public AccessTokenBO findRefreshToken(String refreshToken) {
-        TokenEntity tokenEntity = tokenMapper.selectByRefreshToken(refreshToken);
-        log.info(String.format("Find token %s", tokenEntity.toString()));
+    public AccessTokenBO findAccessToken(String accessToken) {
+        TokenEntity tokenEntity = tokenMapper.selectByAccessToken(accessToken);
         return AccessTokenBO.fromEntity(tokenEntity);
     }
 
 
     /**
-     * 根据TokenId 查找Access Token
+     * 根据TokenId 查找Access NeedToken
      *
      * @param tokenId
      * @return

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 /**
  * @author xinyu.huang02
  * @date 2020-02-26 00:22
- * @class Access Token Request Body
+ * @class Access NeedToken Request Body
  */
 
 @Data

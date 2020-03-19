@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 /**
  * @author xinyu.huang02
  * @date 2020-02-27 21:31
- * @class Access Token Entity
+ * @class Access NeedToken Entity
  */
 @Data
 @Builder
@@ -34,6 +34,8 @@ public class TokenEntity {
     private String scope;
 
     public static TokenEntity fromBO(AccessTokenBO accessTokenBO) {
+        if (accessTokenBO == null)
+            return new TokenEntity();
         return TokenEntity.builder()
                 .accessToken(accessTokenBO.getAccessToken())
                 .appKey(accessTokenBO.getAppKey())

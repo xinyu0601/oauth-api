@@ -7,7 +7,7 @@ import lombok.Data;
 /**
  * @author xinyu.huang02
  * @date 2020-02-27 22:54
- * @class Access Token BO
+ * @class Access NeedToken BO
  */
 @Data
 @Builder

@@ -14,17 +14,19 @@ import java.util.List;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class AppListAO {
 
-    private List<AppAO> appAOList = new ArrayList<>();
+    private List<AppAO> appAOList;
 
     public void addApp(AppBO appBO) {
+        if (appAOList == null)
+            appAOList = new ArrayList<>();
         appAOList.add(AppAO.fromBO(appBO));
     }
 
     public void addApps(List<AppBO> appBOS) {
+        if (appAOList == null)
+            appAOList = new ArrayList<>();
         for (AppBO appBO : appBOS) {
             appAOList.add(AppAO.fromBO(appBO));
         }

@@ -1,5 +1,6 @@
 package com.xin.oauth.controller;
 
+import com.xin.oauth.config.AppConfigurer;
 import com.xin.oauth.enums.ResultCodeEnum;
 import com.xin.oauth.exceptions.AppException;
 import com.xin.oauth.exceptions.SMSException;
@@ -17,9 +18,8 @@ import com.xin.oauth.service.SMSService;
 import com.xin.oauth.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,9 +33,8 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 @RequestMapping("/oauth2")
 @Api(value = "Oauth2 Controller")
+@Slf4j
 public class OauthController {
-
-    private static final Logger log = LoggerFactory.getLogger(OauthController.class);
 
     @Autowired
     private OauthService oauthService;
@@ -49,23 +48,26 @@ public class OauthController {
     @Autowired
     private SMSService smsService;
 
+    @Autowired
+    private AppConfigurer appConfig;
+
+
     /**
      * 跳转到指定页面，填写用户登录信息
      *
      * @param authorizeRequestBody
      * @return
      */
-    @PostMapping("/authorize_page")
+    @GetMapping("/authorize_page")
     @ApiOperation(value = "跳转到用户授权页面接口")
-    public ModelAndView authorize(@RequestBody AuthorizePageRequestBody authorizeRequestBody) {
+    public ModelAndView authorize(AuthorizePageRequestBody authorizeRequestBody) {
         String appKey = authorizeRequestBody.getAppKey();
         String appSecret = authorizeRequestBody.getAppSecret();
         AppBO appBO = appService.findByAppKeyAndAppSecret(appKey, appSecret);
         if (appBO == null)
             throw new AppException(String.format("App[key = %s, secret = %s] not found", appKey, appSecret));
         // 跳转到授权页面
-        String oauthHomePage = "";
-        return new ModelAndView(new RedirectView(oauthHomePage, true), null);
+        return new ModelAndView(new RedirectView(appConfig.getOauthAuthorizePage(), true), null);
     }
 
 
@@ -144,13 +146,13 @@ public class OauthController {
     @ApiOperation(value = "App主动更新Access Token接口")
     public ResultAO<AccessTokenAO> refreshToken(@RequestBody RefreshTokenRequestBody refreshTokenRequestBody) {
         String refreshToken = refreshTokenRequestBody.getRefreshToken();
-        Long tokenId = refreshTokenRequestBody.getTokenId();
-        AccessTokenBO authRefreshTokenBO = oauthService.findRefreshToken(refreshToken);
-        if (authRefreshTokenBO == null)
-            throw new TokenException(String.format("Refresh token [%s] not found", refreshToken));
-        AccessTokenBO accessTokenBO = oauthService.findTokenByTokenId(tokenId);
+        if (!oauthService.verifyRefreshToken(refreshToken)) {
+            throw new TokenException(String.format("Refresh token [%s] not valid", refreshToken));
+        }
+        String accessToken = refreshTokenRequestBody.getAccessToken();
+        AccessTokenBO accessTokenBO = oauthService.findAccessToken(accessToken);
         if (accessTokenBO == null)
-            throw new TokenException(String.format("Access token [%s] not found", tokenId));
+            throw new TokenException(String.format("Access token [%s] not found", accessToken));
         AccessTokenBO newAccessTokenBO = oauthService.generateAccessToken(accessTokenBO.getAppKey(), accessTokenBO.getAppSecret());
         if (newAccessTokenBO == null)
             throw new TokenException("Generate New Access token failed");

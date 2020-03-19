@@ -26,7 +26,7 @@ public class AppAO {
 
     private String createTime;
 
-    private String userId;
+    private Long userId;
 
     private boolean isOpen;
 
@@ -37,6 +37,9 @@ public class AppAO {
                 .appKey(appBO.getAppKey())
                 .appSecret(appBO.getAppSecret())
                 .callbackUrl(appBO.getCallbackUrl())
+                .description(appBO.getDescription())
+                .createTime(appBO.getCreateTime())
+                .userId(appBO.getUserId())
                 .isOpen(appBO.isOpen())
                 .createTime(appBO.getCreateTime()).build();
     }

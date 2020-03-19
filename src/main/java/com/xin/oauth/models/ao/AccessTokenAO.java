@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 /**
  * @author xinyu.huang02
  * @date 2020-02-28 00:16
- * @class Access Token 返回类
+ * @class Access NeedToken 返回类
  */
 @Data
 @Builder
