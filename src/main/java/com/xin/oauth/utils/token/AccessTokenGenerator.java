@@ -19,6 +19,7 @@ public class AccessTokenGenerator {
 
     private static final String TOKEN_FORMAT = "1.%s";
 
+
     public String generate(String appkey, String appSecret) {
         if (StringUtils.isBlank(appkey) || StringUtils.isBlank(appSecret))
             throw new TokenException("App key or app secret is blank");

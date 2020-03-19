@@ -1,5 +1,7 @@
 package com.xin.oauth.controller;
 
+import com.xin.oauth.annotation.ApiIdempotent;
+import com.xin.oauth.annotation.NeedRateLimiter;
 import com.xin.oauth.config.AppConfigurer;
 import com.xin.oauth.enums.ResultCodeEnum;
 import com.xin.oauth.exceptions.AppException;
@@ -79,6 +81,7 @@ public class OauthController {
      */
     @PostMapping("/authorize")
     @ApiOperation(value = "通过用户名，密码以及短信验证码生成ticket, 并请求回调接口，传递ticket")
+    @NeedRateLimiter(permitsPerSecond = 1)
     public ModelAndView login(@RequestBody AuthorizeRequestBody authorizeRequestBody) {
         String userName = authorizeRequestBody.getUserName();
         String password = authorizeRequestBody.getPassword();
@@ -93,8 +96,10 @@ public class OauthController {
             throw new SMSException(String.format("sms code [%s] is expired", smsCode));
 
         AppBO appBO = appService.findByAppKeyAndAppSecret(appKey, appSecret);
-        TicketBO ticketBO = oauthService.generateTicket(appKey, appSecret);
+        if (appBO == null)
+            throw new AppException("App not found");
 
+        TicketBO ticketBO = oauthService.generateTicket(appKey, appSecret);
         String params = "?ticket=" + ticketBO.getTicket();
         if (StringUtils.isNoneBlank(status)) {
             params = params + "&status=" + status;
@@ -112,6 +117,8 @@ public class OauthController {
      */
     @PostMapping("/access_token")
     @ApiOperation(value = "App通过获取到的ticket生成Access Token接口")
+    @ApiIdempotent
+    @NeedRateLimiter
     public ResultAO<AccessTokenAO> accessToken(@RequestBody AccessTokenRequestBody accessTokenRequestBody) {
         String ticket = accessTokenRequestBody.getTicket();
         String appKey = accessTokenRequestBody.getAppKey();
@@ -120,7 +127,7 @@ public class OauthController {
 
         AppBO appBO = appService.findByAppKeyAndAppSecret(appKey, appSecret);
         if (appBO == null)
-            throw new AppException(String.format("App [key = %s, secret = %s] not found", appKey, appSecret));
+            return new ResultAO<>(ResultCodeEnum.APP_FAIL);
         AccessTokenBO accessTokenBO = null;
         TicketBO ticketBO = TicketBO.builder()
                 .ticket(ticket)
@@ -144,6 +151,7 @@ public class OauthController {
      */
     @PostMapping("/refresh_token")
     @ApiOperation(value = "App主动更新Access Token接口")
+    @NeedRateLimiter
     public ResultAO<AccessTokenAO> refreshToken(@RequestBody RefreshTokenRequestBody refreshTokenRequestBody) {
         String refreshToken = refreshTokenRequestBody.getRefreshToken();
         if (!oauthService.verifyRefreshToken(refreshToken)) {
@@ -167,6 +175,7 @@ public class OauthController {
      */
     @PostMapping("/logout")
     @ApiOperation(value = "登出操作接口")
+    @NeedRateLimiter
     public ResultAO<String> logout(@RequestBody LogoutRequestBody logoutRequestBody) {
         oauthService.expiresTicket(logoutRequestBody.getTicket());
         oauthService.expiresToken(logoutRequestBody.getAccessToken());

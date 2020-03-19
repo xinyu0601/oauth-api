@@ -8,11 +8,13 @@ import com.xin.oauth.service.AppService;
 import com.xin.oauth.utils.token.AppKeyGenerator;
 import com.xin.oauth.utils.token.AppSecretGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author xinyu.huang02
@@ -138,6 +140,11 @@ public class AppServiceImpl implements AppService {
     @Override
     public AppBO findByAppKeyAndAppSecret(String appKey, String appSecret) {
         log.info("Find app when app = {}, appSecret = {}", appKey, appSecret);
+        try {
+            TimeUnit.SECONDS.sleep(40000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         AppEntity appEntity = appMapper.selectByAppKeyAndAppSecret(appKey, appSecret);
         if (appEntity == null) {
             return null;
