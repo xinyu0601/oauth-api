@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <fastjson.version>1.2.47</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <okhttp.version>3.8.1</okhttp.version>
         <spring-cloud.version>Finchley.SR1</spring-cloud.version>
         <tk.mybatis.version>1.1.0</tk.mybatis.version>
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.9</version>
+            <version>1.2.83</version>
         </dependency>
     </dependencies>
 
